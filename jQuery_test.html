@@ -4,9 +4,17 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 	<title>Quality Event</title>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-	<script type="text/javascript">				
+	<script type="text/javascript">		
+	function fnInputNoWS(userinput){
+		userinput = userinput.replace(/^\s+/, '').replace(/\s+$/, '');
+		console.log("user input: "+userinput)
+		return userinput;
+	}
+	
+	$(function(){
 		//To hide other country row
 		$("#objCountryRow").hide();
+		$("#txtOtherCountry").val("");
 		//On change event for Country
 		$("#txtCountry").change(function(e) {
 			//To show Other country row
@@ -15,6 +23,8 @@
 			} else {
 				//To hide Other country row
 				$("#objCountryRow").hide();
+				$("#txtOtherCountry").val("");
+				
 			}
 	
 		});
@@ -28,30 +38,40 @@
 							var ObjPass = $("#txtPass");
 							var objOtherCountry = $("#txtOtherCountry");
 							//To check name field is null or not
-							if (objName.val() != "") {
+							if (fnInputNoWS(objName.val())!= "") {
 								//To check password field is null or not
-								if (ObjPass.val() != "") {
+								if (fnInputNoWS(ObjPass.val()) != "") {
 									//To check age filed is number and should be less than 100 
 									if ($.isNumeric(objAge.val())
-											&& objAge.val() < 100) {
+											&& objAge.val() < 100 && objAge.val() > 0) {
 										//To check country filed selected or not
-										if ($("#txtCountry option:selected").text() != "") {
-											if ($("#txtCountry option:selected")
-													.text() != "Others"
-													|| ObjPass.val() != "") {
-												alert("Form Submitted Successfully")
+										if (fnInputNoWS($("#txtCountry").val()) != "") {
+										
+											if($("#txtCountry")
+													.val() != "Others"){
+													alert("Form Submitted Successfully");
+												    return true;
+											}
+											else if ($("#txtCountry")
+													.val() == "Others"
+													&& objOtherCountry.val() != "") {
+												alert("Form Submitted Successfully");
 												return true;
 											}
+											
 										}
 									}
 								}
 							}
+							
 							alert("Enter valid data in all rows");
+							return false;
 	
 						});
 		//On blur event to validate/adjust the date 
 		$("#numDobDay").blur(function() {
 			var numDobDay = $("#numDobDay").val();
+			
 			if (!$.isNumeric(numDobDay) || numDobDay > 31 || numDobDay < 1) {
 				alert("Please enter valid date");
 				$("#numDobDay").val("");
@@ -63,7 +83,7 @@
 		//On blur event to validate/adjust the month 
 		$("#numDobMonth").blur(function() {
 			var numDobMonth = $("#numDobMonth").val();
-			if (!$.isNumeric(numDobMonth) && numDobMonth > 12 && numDobMonth < 1) {
+			if (!$.isNumeric(numDobMonth) || numDobMonth > 12 || numDobMonth < 1) {
 				alert("Please enter valid month");
 				$("#numDobMonth").val("");
 				$("#numDobMonth").focus();
@@ -74,7 +94,7 @@
 		//On blur event to validate the year
 		$("#numDobYear").blur(function() {
 			var numDobYear = $("#numDobYear").val();
-			if (!$.isNumeric(numDobYear) && numDobYear.length != 4) {
+			if (!$.isNumeric(numDobYear) || numDobYear.length != 4) {
 				alert("Please enter valid year");
 				$("#numDobYear").val("");
 				$("#numDobYear").focus();
@@ -96,8 +116,8 @@
 		$("#numJoinMonth").blur(
 				function() {
 					var numJoinMonth = $("#numJoinMonth").val();
-					if (!$.isNumeric(numJoinMonth) && numJoinMonth > 12
-							&& numJoinMonth < 1) {
+					if (!$.isNumeric(numJoinMonth) || numJoinMonth > 12
+							|| numJoinMonth < 1) {
 						alert("Please enter valid month");
 						$("#numJoinMonth").val("");
 						$("#numJoinMonth").focus();
@@ -108,22 +128,29 @@
 		//On blur event to validate the year
 		$("#numJoinYear").blur(function() {
 			var numJoinYear = $("#numJoinYear").val();
-			if (!$.isNumeric(numJoinYear) && numJoinYear.length < 4) {
+			console.log()
+			if (!$.isNumeric(numJoinYear) || numJoinYear.length != 4) {
 				alert("Please enter valid year");
 				$("#numJoinYear").val("");
 				$("#numJoinYear").focus();
 			}
 	
 		});
-		//To validate file e
+		
+		
+		//To validate filee
 		$("#objPhoto").change(function() {
 			var filename = $("#objPhoto").val();
 			// Use a regular expression to trim everything before final dot
 			var extension = filename.replace(/^.*\./, '');
-			if (extension != "JPEG" && extension != "JPG" && extension != "jpeg") {
+			console.log(extension);
+			console.log(filename);
+			if (extension != "JPEG" && extension != "JPG" && extension != "jpeg" && extension != "jpg") {
 				alert("Please upload jpeg image only");
 			}
 		});
+	
+	});
 	</script>
 	<style>
 	td {
@@ -153,9 +180,9 @@
 				<tr>
 					<td>Date of Birth</td>
 					<td>DD<input type="text" name="numDobDay" id="numDobDay"
-						size="1" />-MM<input type="text" name="numDobMonth"
-						id="numDobMonth" size="1" />-YYYY<input type="text"
-						name="numDobYear" id="numDobYear" size="3" /></td>
+						size="1" maxlength="2"/>-MM<input type="text" name="numDobMonth"
+						id="numDobMonth" size="1" maxlength="2"/>-YYYY<input type="text"
+						name="numDobYear" id="numDobYear" size="3" maxlength="4"/></td>
 				</tr>
 				<tr>
 					<td>Country</td>
@@ -176,9 +203,9 @@
 				<tr>
 					<td>Joining Date</td>
 					<td>DD<input type="text" name="numJoinDay" id="numJoinDay"
-						size="1" />-MM<input type="text" name="numJoinMonth"
-						id="numJoinMonth" size="1" />-YYYY<input type="text"
-						name="numJoinYear" id="numJoinYear" size="3" /></td>
+						size="1" maxlength="2"/>-MM<input type="text" name="numJoinMonth"
+						id="numJoinMonth" size="1" maxlength="2"/>-YYYY<input type="text"
+						name="numJoinYear" id="numJoinYear" size="3" maxlength="4"/></td>
 				</tr>
 				<tr>
 					<td>Upload Photo</td>
